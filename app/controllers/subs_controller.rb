@@ -90,16 +90,67 @@ class SubsController < ApplicationController
   #     params.require(:model_name).permit(:attr, :attr2)
   #   end
 
-
+  # model - sub
   def index
+    @subs = Sub.all
+    render component: 'Subs', props: { subs: @subs}
   end
 
   def show
+    @sub = Sub.find(params[:id])
+    render component: 'Sub', props: { sub: @sub }
   end
 
   def new
+    @sub = Sub.new
+    render component: 'SubNew', props: { sub: @sub }
+  end
+
+  def create
+    @sub = Sub.new(sub_params)
+    if @sub.save 
+      redirect_to subs_path
+    else
+      render component: 'SubNew', props: { sub: @sub }
+    end
   end
 
   def edit
+    @sub = Sub.find(params[:id])
+    render component: 'SubEdit', props: { sub: @sub }
   end
+
+  def update 
+    @sub = Sub.find(params[:id])
+    if @sub.update(sub_params)
+      redirect_to subs_path
+    else
+      render component: 'SubEdit', props: { sub: @sub }
+    end
+  end
+
+  def destroy
+    @sub = Sub.find(params[:id])
+    @sub.destroy
+    redirect_to subs_path
+
+    # or 
+    # Sub.find(params[:id]).destroy
+    # redirect_to subs_path
+  end
+
+  private 
+    # { sub: { name: '' } }
+    # sql injection 
+    # { sub: { name: select * from CCNUM } }
+    # { sub: { name: 'select * from CCNUM' } }
+    # not permited 
+    # { sub: {name: '', age: 23} }
+    # { sub: {name: 23, age: 23} }
+    # { sub: {name: '12213', age: 23} }
+    def sub_params
+      params.require(:sub).permit(:name)
+    end
+
+
 end
