@@ -1,3 +1,4 @@
 class Sub < ApplicationRecord
-  validates :name, presence: true 
+  has_many :topics
+  validates :name, presence: true
 end
